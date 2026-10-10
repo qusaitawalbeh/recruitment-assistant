@@ -82,8 +82,8 @@ def _ask_model(prompt):
     response = ollama.chat(
         model=MODEL,
         messages=[{"role": "user", "content": prompt}],
-        format="json" 
-        options={"temperature": 0},     
+        format="json",
+        options={"temperature": 0},
     )
     return response["message"]["content"]
 
