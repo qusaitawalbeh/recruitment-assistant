@@ -5,3 +5,4 @@ token.json
 data/cvs/
 __pycache__/
 *.pyc
+data/processed_ids.json
