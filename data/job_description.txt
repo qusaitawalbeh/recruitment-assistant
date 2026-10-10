@@ -1,0 +1,27 @@
+Job Title: Junior Data Scientist
+Company: Sample Tech Co.
+Location: Amman, Jordan (Hybrid)
+
+About the Role
+We are looking for a Junior Data Scientist to join our analytics team. You will work with senior engineers to clean data, build machine learning models, and present insights to the business.
+
+Responsibilities
+- Collect, clean, and prepare data for analysis.
+- Build and evaluate machine learning models.
+- Write SQL queries to extract data from company databases.
+- Present findings clearly to technical and non-technical colleagues.
+
+Requirements
+- Bachelor's degree in Computer Science, Data Science, Artificial Intelligence, or a related field.
+- At least 1 year of experience in data analysis or machine learning (internships and academic projects count).
+- Strong programming skills in Python.
+- Good knowledge of SQL.
+- Experience with machine learning libraries such as scikit-learn.
+- Good command of English, written and spoken.
+
+Nice to Have
+- Experience with deep learning frameworks such as TensorFlow or PyTorch.
+- A cloud certification (AWS, Azure, or Google Cloud).
+- Experience with data visualization tools such as Power BI or Tableau.
+- Fluency in Arabic.
+- Experience using Git and GitHub.
