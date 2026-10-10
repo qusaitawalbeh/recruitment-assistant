@@ -1,6 +1,6 @@
 from src.gmail_auth import get_gmail_service
 from src.gmail_reader import (
-    search_messages, get_message, parse_message,
+    search_messages, get_message, parse_message, save_cv_attachments,
     load_processed_ids, save_processed_ids,
 )
 
@@ -20,8 +20,12 @@ for msg_id in ids:
     print("-" * 50)
     print("From:   ", email["sender"])
     print("Subject:", email["subject"])
-    print("Files:  ", [a["filename"] for a in email["attachments"]])
 
-    processed.add(msg_id)
+    saved = save_cv_attachments(service, email)
+    if saved:
+        print("Saved:  ", saved)
+        processed.add(msg_id)  
+    else:
+        print("No CV saved, will retry next run")
 
 save_processed_ids(processed)
