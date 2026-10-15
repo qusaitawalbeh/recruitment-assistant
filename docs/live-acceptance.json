@@ -1,0 +1,42 @@
+{
+  "timestamp_utc": "2026-10-15T18:46:21.438276+00:00",
+  "checks": [
+    {
+      "name": "real_job_extraction_and_hr_confirmation",
+      "status": "passed"
+    },
+    {
+      "name": "real_pdf_docx_batch_and_independent_file_error",
+      "status": "passed"
+    },
+    {
+      "name": "real_model_must_haves_alternative_degree_and_scoped_experience",
+      "status": "passed"
+    },
+    {
+      "name": "ranking_original_cv_decision_persistence_and_duplicate",
+      "status": "passed"
+    },
+    {
+      "name": "second_job_and_per_job_application_identity",
+      "status": "passed"
+    },
+    {
+      "name": "real_embedding_different_wording_orders_related_above_unrelated",
+      "status": "passed"
+    },
+    {
+      "name": "real_readonly_gmail_collection_model_screening_and_repeat_skip",
+      "status": "passed"
+    },
+    {
+      "name": "streamlit_results_page_with_live_processed_data",
+      "status": "passed"
+    }
+  ],
+  "semantic_check": {
+    "related_similarity": 0.5915,
+    "unrelated_similarity": 0.0852
+  },
+  "status": "passed"
+}

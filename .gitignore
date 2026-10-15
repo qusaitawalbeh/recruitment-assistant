@@ -7,3 +7,12 @@ __pycache__/
 *.pyc
 data/processed_ids.json
 data/candidates.json
+.venv/
+.pytest_cache/
+data/*.sqlite3*
+data/*.db*
+data/backups/
+.env.*
+!.env.example
+tmp/
+output/

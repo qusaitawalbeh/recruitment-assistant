@@ -1,76 +1,39 @@
-import os
-
-from src.gmail_auth import get_gmail_service
-from src.gmail_reader import (
-    search_messages, get_message, parse_message, save_cv_attachments,
-    load_processed_ids, save_processed_ids,
-)
-from src.cv_extractor import build_candidate, CVExtractionError
-from src.storage import load_candidates, save_candidates
-
-
-SUBJECT_KEYWORDS = [
-    "application", "CV", "resume", "job",
-    '"طلب توظيف"', '"سيرة ذاتية"',
-]
-NEWER_THAN = "30d"
-MAX_RESULTS = 50
-
-
-def build_query():
-    subjects = " OR ".join(f"subject:{kw}" for kw in SUBJECT_KEYWORDS)
-    return (
-        "has:attachment (filename:pdf OR filename:docx) "
-        f"({subjects}) newer_than:{NEWER_THAN}"
-    )
+"""Command-line entry point to the same Week 2 screening workflow as the API."""
+import argparse
+import json
+from pathlib import Path
+from dotenv import load_dotenv
+from src import screening
 
 
 def main():
-    service = get_gmail_service()
-    processed = load_processed_ids()
-    candidates = load_candidates()
-    existing = {(c["email_id"], c["cv_file"]) for c in candidates}
-
-    query = build_query()
-    print("Search query:", query)
-    ids = search_messages(service, query=query, max_results=MAX_RESULTS)
-    print(f"Found {len(ids)} emails")
-
-    for msg_id in ids:
-        if msg_id in processed:
-            print(f"Skipping already processed: {msg_id}")
-            continue
-
-        email = parse_message(get_message(service, msg_id))
-        print("-" * 50)
-        print("From:   ", email["sender"])
-        print("Subject:", email["subject"])
-
-        saved = save_cv_attachments(service, email)
-
-        extracted = 0
-        for path in saved:
-            name = os.path.basename(path)
-            try:
-                candidate = build_candidate(email, path)
-                key = (candidate["email_id"], candidate["cv_file"])
-                if key not in existing:
-                    candidates.append(candidate)
-                    existing.add(key)
-                extracted += 1
-                print(f"  Text extracted: {name} ({len(candidate['cv_text'])} chars)")
-            except CVExtractionError as e:
-                print(f"  Extraction failed for {name}: {e}")
-
-
-        if extracted:
-            processed.add(msg_id)
+    load_dotenv()
+    parser = argparse.ArgumentParser(description="Screen CVs for an existing, HR-confirmed job.")
+    parser.add_argument("--job-id", required=True, help="Create and confirm a job in the UI first")
+    sources = parser.add_mutually_exclusive_group(required=True)
+    sources.add_argument("--gmail-query", help='Job-specific Gmail query, e.g. subject:"Data Scientist"')
+    sources.add_argument("--files", nargs="+", help="PDF/DOCX file paths")
+    sources.add_argument("--rescreen", action="store_true", help="Re-evaluate saved CVs")
+    args = parser.parse_args()
+    try:
+        if args.gmail_query:
+            result = screening.screen_gmail(args.job_id, args.gmail_query)
+        elif args.rescreen:
+            result = {"results": screening.rescreen(args.job_id)}
         else:
-            print("  No usable CV text, will retry next run")
-
-    save_processed_ids(processed)
-    save_candidates(candidates)
-    print(f"\nTotal candidates stored: {len(candidates)}")
+            job = screening.ready_job(args.job_id)
+            results = []
+            for name in args.files:
+                try:
+                    with Path(name).open("rb") as stream:
+                        content = stream.read(screening.MAX_FILE_BYTES + 1)
+                    results.append(screening.ingest(job, Path(name).name, content, {"type": "local"}))
+                except Exception as exc:
+                    results.append({"filename": name, "status": "error", "error": str(exc)})
+            result = {"results": results}
+        print(json.dumps(result, indent=2, ensure_ascii=False))
+    except Exception as exc:
+        parser.exit(1, f"Screening failed: {exc}\n")
 
 
 if __name__ == "__main__":

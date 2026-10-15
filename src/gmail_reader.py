@@ -61,11 +61,12 @@ def list_attachments(payload):
     found = []
     filename = payload.get("filename")
     body = payload.get("body", {})
-    if filename and body.get("attachmentId"):
+    if filename and (body.get("attachmentId") or body.get("data")):
         found.append({
             "filename": filename,
             "mime_type": payload.get("mimeType"),
-            "attachment_id": body["attachmentId"],
+            "attachment_id": body.get("attachmentId"),
+            "inline_data": body.get("data"),
             "size": body.get("size", 0),
         })
     for part in payload.get("parts", []):
@@ -115,6 +116,13 @@ def download_attachment(service, message_id, attachment_id):
     return base64.urlsafe_b64decode(data)
 
 
+def attachment_content(service, message_id, attachment):
+    data = attachment.get("inline_data")
+    if data:
+        return base64.urlsafe_b64decode(data + "=" * (-len(data) % 4))
+    return download_attachment(service, message_id, attachment["attachment_id"])
+
+
 def safe_filename(name):
 
     name = os.path.basename(name)
@@ -132,7 +140,7 @@ def save_cv_attachments(service, email):
             continue
 
         try:
-            content = download_attachment(service, email["id"], att["attachment_id"])
+            content = attachment_content(service, email["id"], att)
 
             ext = os.path.splitext(att["filename"].lower())[1]
             if not content.startswith(MAGIC_BYTES[ext]):

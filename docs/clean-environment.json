@@ -1,0 +1,17 @@
+{
+  "python": "3.12.14",
+  "platform": "Windows",
+  "versions": {
+    "fastapi": "0.143.2",
+    "pydantic": "2.14.1",
+    "streamlit": "1.66.0",
+    "pypdf": "6.20.1",
+    "sentence-transformers": "6.1.0",
+    "torch": "2.14.1",
+    "transformers": "5.20.0",
+    "numpy": "2.5.4"
+  },
+  "real_ollama_extraction": "passed",
+  "real_embedding_loading": "passed",
+  "related_similarity": 0.5915
+}
